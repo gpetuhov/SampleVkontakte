@@ -3,12 +3,16 @@ package com.gpetuhov.android.samplevkontakte
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.gpetuhov.android.samplevkontakte.models.VKUser
+import com.gpetuhov.android.samplevkontakte.requests.VKUsersRequest
 import com.pawegio.kandroid.defaultSharedPreferences
 import com.pawegio.kandroid.toast
 import com.vk.api.sdk.VK
+import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.auth.VKAccessToken
 import com.vk.api.sdk.auth.VKAuthCallback
 import com.vk.api.sdk.auth.VKScope
+import com.vk.api.sdk.exceptions.VKApiExecutionException
 import kotlinx.android.synthetic.main.activity_main.*
 
 // Notice that in VK SDK version 2 we don't have to initialize VK in Application.onCreate()
@@ -64,11 +68,28 @@ class MainActivity : AppCompatActivity() {
             // Restore current token
             val token = VKAccessToken.restore(defaultSharedPreferences)
 
-            // Get user ID from the token (if exists)
-            userName.text = token?.userId?.toString() ?: ""
+            if (token != null) {
+                // Get user UID from the token
+                getUserName(token.userId)
+            } else {
+                userName.text = ""
+            }
 
         } else {
             userName.text = ""
         }
+    }
+
+    private fun getUserName(userUid: Int) {
+        VK.execute(VKUsersRequest(intArrayOf(userUid)), object: VKApiCallback<List<VKUser>> {
+            override fun success(result: List<VKUser>) {
+                userName.text = if (!result.isEmpty()) result[0].firstName else "Unknown"
+            }
+
+            override fun fail(error: VKApiExecutionException) {
+                toast("Error getting user name")
+                userName.text = ""
+            }
+        })
     }
 }

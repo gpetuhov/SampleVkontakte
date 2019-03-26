@@ -1,5 +1,5 @@
 # SampleVkontakte
-Learn the basics of Vkontakte SDK for Android.
+Learn the basics of Vkontakte SDK v2 for Android.
 
 ## Requirements
 * Android Studio 3.5 Canary 8
