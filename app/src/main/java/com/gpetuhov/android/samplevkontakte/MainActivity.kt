@@ -3,6 +3,7 @@ package com.gpetuhov.android.samplevkontakte
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.pawegio.kandroid.defaultSharedPreferences
 import com.pawegio.kandroid.toast
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.auth.VKAccessToken
@@ -18,6 +19,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        initName()
+
         loginButton.setOnClickListener { login() }
     }
 
@@ -26,6 +29,11 @@ class MainActivity : AppCompatActivity() {
             override fun onLogin(token: VKAccessToken) {
                 // User passed authorization
                 toast("Login success")
+
+                // Save current token
+                token.save(defaultSharedPreferences)
+
+                initName()
             }
 
             override fun onLoginFailed(errorCode: Int) {
@@ -43,5 +51,13 @@ class MainActivity : AppCompatActivity() {
         // Login and request access to wall posts and photos.
         // Result is passed into onActivityResult()
         VK.login(this, arrayListOf(VKScope.WALL, VKScope.PHOTOS))
+    }
+
+    private fun initName() {
+        // Restore current token
+        val token = VKAccessToken.restore(defaultSharedPreferences)
+
+        // Get user ID from the token (if exists)
+        userName.text = token?.userId?.toString() ?: ""
     }
 }
