@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
             val token = VKAccessToken.restore(defaultSharedPreferences)
 
             if (token != null) {
-                // Get user UID from the token
+                // Get current user ID from the token
                 getUserName(token.userId)
             } else {
                 userName.text = ""
@@ -81,6 +81,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getUserName(userUid: Int) {
+        // Get user with current user ID
         VK.execute(VKUsersRequest(intArrayOf(userUid)), object: VKApiCallback<List<VKUser>> {
             override fun success(result: List<VKUser>) {
                 userName.text = if (!result.isEmpty()) result[0].firstName else "Unknown"
@@ -91,5 +92,11 @@ class MainActivity : AppCompatActivity() {
                 userName.text = ""
             }
         })
+
+        // Notice that we could send the request WITHOUT current user ID
+        // (in this case the backend responds with current user info by default)
+//        VK.execute(VKUsersRequest(), object: VKApiCallback<List<VKUser>> {
+//            ...
+//        }
     }
 }
