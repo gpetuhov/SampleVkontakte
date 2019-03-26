@@ -1,12 +1,12 @@
 package com.gpetuhov.android.samplevkontakte
 
 import android.app.Application
-import com.vk.api.sdk.VK
 
 class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        VK.initialize(this)
+
+        // Notice that in VK SDK version 2 initialization is done automatically
     }
 }
